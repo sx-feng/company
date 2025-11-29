@@ -87,12 +87,12 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 22px;
+  height: 28px;
 }
 
 .nav-icon img {
-  width: 20px;
-  height: 20px;
+  width: 26px;
+  height: 26px;
 }
 
 .nav-item.active .nav-icon,

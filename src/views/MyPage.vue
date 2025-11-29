@@ -38,19 +38,19 @@ export default {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 14px 12px 8px;
+  padding: 16px 14px 12px;
 }
 
 .title {
-  font-size: 16px;
-  font-weight: 600;
+  font-size: 18px;
+  font-weight: 700;
   color: var(--gray-600);
 }
 
 .settings-btn {
-  width: 34px;
-  height: 34px;
-  border-radius: 50%;
+  width: 38px;
+  height: 38px;
+  border-radius: 12px;
   border: 1px solid var(--gray-200);
   background: var(--surface);
   color: var(--gray-600);
@@ -59,6 +59,7 @@ export default {
   justify-content: center;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
   cursor: pointer;
+  font-size: 18px;
 }
 
 .content {
