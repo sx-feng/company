@@ -4,6 +4,8 @@ const allArtists = [
   {
     id: 'lin-yaxin',
     name: '林雅心',
+    status: 'online',
+    favorite: true,
     avatar: mastergo('/173964260355666/173964260355669/97c87da7b0edd757f603211744f60691.png'),
     experienceBadges: ['十年经验', '新娘妆达人'],
     rating: 5,
@@ -17,6 +19,8 @@ const allArtists = [
   {
     id: 'chen-mengyao',
     name: '陈梦瑶',
+    status: 'working',
+    favorite: true,
     avatar: mastergo('/173964260355666/173964260355669/ccb53124cdbf55ca94e06ac18d77052f.png'),
     experienceBadges: ['五年经验', '时尚博主合作'],
     rating: 4.6,
@@ -30,6 +34,8 @@ const allArtists = [
   {
     id: 'zhao-wanting',
     name: '赵婉婷',
+    status: 'holiday',
+    favorite: false,
     avatar: mastergo('/173964260355666/173964260355669/c7bc293c9c8043a8c94992a9e694225c.png'),
     experienceBadges: ['八年经验', '明星御用'],
     rating: 5,
@@ -43,6 +49,8 @@ const allArtists = [
   {
     id: 'yang-xinru',
     name: '杨欣茹',
+    status: 'working',
+    favorite: false,
     avatar: mastergo('/173964260355666/173964260355669/97c87da7b0edd757f603211744f60691.png'),
     experienceBadges: ['七年经验', '婚礼团队'],
     rating: 4.8,
@@ -56,6 +64,8 @@ const allArtists = [
   {
     id: 'liu-nuo',
     name: '刘诺',
+    status: 'online',
+    favorite: true,
     avatar: mastergo('/173964260355666/173964260355669/97c87da7b0edd757f603211744f60691.png'),
     experienceBadges: ['三年经验', '学院派'],
     rating: 4.3,
@@ -69,6 +79,8 @@ const allArtists = [
   {
     id: 'sun-yue',
     name: '孙悦',
+    status: 'holiday',
+    favorite: false,
     avatar: mastergo('/173964260355666/173964260355669/97c87da7b0edd757f603211744f60691.png'),
     experienceBadges: ['十二年经验', '秀场彩妆'],
     rating: 4.9,
@@ -174,10 +186,10 @@ export function fetchFilters() {
   return new Promise((resolve) => {
     setTimeout(() => {
       resolve([
-        { id: 'comprehensive', label: '综合排序' },
-        { id: 'distance', label: '距离最近' },
-        { id: 'rating', label: '评分最高' },
-        { id: 'price', label: '价格最低' },
+        { id: 'all', label: '全部' },
+        { id: 'online', label: '在线' },
+        { id: 'holiday', label: '休假中' },
+        { id: 'favorite', label: '收藏' },
       ]);
     }, 120);
   });
