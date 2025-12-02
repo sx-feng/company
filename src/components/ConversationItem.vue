@@ -1,7 +1,7 @@
 <template>
-  <div class="conversation-row">
+  <div class="conversation-row" @click="handleSelect">
     <div class="avatar-wrap">
-      <img :src="avatar" :alt="name" class="avatar" />
+      <img :src="avatar" :alt="name" class="avatar" @error="onAvatarError" />
       <span v-if="unread > 0" class="badge">{{ unread }}</span>
     </div>
     <div class="content">
@@ -15,6 +15,10 @@
 </template>
 
 <script>
+import avatar1 from '../assets/styles/huazhuangshi.png';
+import avatar2 from '../assets/styles/huazhuangshi1.png';
+import avatar3 from '../assets/styles/profile.png';
+
 export default {
   name: 'ConversationItem',
   props: {
@@ -25,6 +29,23 @@ export default {
     unread: {
       type: Number,
       default: 0,
+    },
+  },
+  emits: ['select'],
+  data() {
+    return {
+      fallbackAvatars: [avatar1, avatar2, avatar3],
+    };
+  },
+  methods: {
+    onAvatarError(evt) {
+      const pool = this.fallbackAvatars.filter(Boolean);
+      if (!pool.length || !evt?.target) return;
+      const idx = Math.abs((this.name || '').split('').reduce((acc, c) => acc + c.charCodeAt(0), 0)) % pool.length;
+      evt.target.src = pool[idx];
+    },
+    handleSelect() {
+      this.$emit('select', { name: this.name, avatar: this.avatar });
     },
   },
 };

@@ -1,7 +1,6 @@
 <template>
   <article class="demand-card">
     <header class="card-header">
-      <img class="avatar" :src="demand.avatar" :alt="demand.name" />
       <div class="identity">
         <p class="name">{{ demand.name }}</p>
         <p class="phone">{{ demand.phone }}</p>
@@ -11,19 +10,19 @@
 
     <div class="details">
       <p class="detail-line">
-        <span class="label">预算：</span>
+        <span class="label">预算</span>
         <span class="value">{{ demand.budget }}</span>
       </p>
       <p class="detail-line">
-        <span class="label">服务：</span>
+        <span class="label">服务</span>
         <span class="value">{{ demand.service }}</span>
       </p>
       <p class="detail-line">
-        <span class="label">时间：</span>
+        <span class="label">时间</span>
         <span class="value">{{ demand.time }}</span>
       </p>
       <p class="detail-line">
-        <span class="label">地点：</span>
+        <span class="label">地点</span>
         <span class="value">{{ demand.location }}</span>
       </p>
     </div>
@@ -71,14 +70,6 @@ export default {
   display: flex;
   align-items: flex-start;
   gap: 10px;
-}
-
-.avatar {
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
-  object-fit: cover;
-  flex-shrink: 0;
 }
 
 .identity {
@@ -139,6 +130,7 @@ export default {
 .label {
   color: #111827;
   font-weight: 600;
+  margin-right: 12px;
 }
 
 .actions {
@@ -161,7 +153,7 @@ export default {
 
 .action.ghost {
   background: #f9fafb;
-  border-color: var(--gray-200);
+  border-color: #e5e7eb;
   color: #374151;
 }
 

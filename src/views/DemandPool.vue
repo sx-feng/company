@@ -11,12 +11,7 @@
               />
             </svg>
           </span>
-          <input
-            v-model.trim="keyword"
-            class="search-input"
-            type="text"
-            placeholder="搜索客户或需求..."
-          />
+          <input v-model.trim="keyword" class="search-input" type="text" placeholder="搜索客户或需求..." />
         </div>
       </div>
       <div class="top-actions">
@@ -43,7 +38,7 @@
       <div class="fab">
         <button class="post-button" type="button" @click="handlePostClick">
           <span class="icon">+</span>
-          <span>发布需求</span>
+          <span>{{ isEditing ? '编辑需求' : '发布需求' }}</span>
         </button>
       </div>
 
@@ -74,12 +69,51 @@
             :key="demand.id"
             :demand="demand"
             @view="logAction('view', demand)"
-            @edit="logAction('edit', demand)"
+            @edit="handleEdit(demand)"
             @push="logAction('push', demand)"
           />
         </template>
         <div v-else class="empty-state">暂无需求，点击右下角发布新需求</div>
       </section>
+
+      <div v-if="showPostForm" class="modal-backdrop" role="dialog" aria-modal="true">
+        <div class="modal">
+          <div class="modal-header">
+            <div class="modal-title">{{ isEditing ? '编辑需求' : '发布新需求' }}</div>
+            <button class="close-btn" type="button" aria-label="关闭" @click="closePostForm">×</button>
+          </div>
+          <form class="form" @submit.prevent="submitDemand">
+            <label class="field">
+              <span>客户名称</span>
+              <input v-model.trim="draft.name" type="text" placeholder="请输入客户名称" required />
+            </label>
+            <label class="field">
+              <span>联系方式</span>
+              <input v-model.trim="draft.phone" type="tel" placeholder="手机或座机" required />
+            </label>
+            <label class="field">
+              <span>服务需求</span>
+              <input v-model.trim="draft.service" type="text" placeholder="例如：婚礼跟妆 / 商务造型" required />
+            </label>
+            <label class="field">
+              <span>所在城市</span>
+              <input v-model.trim="draft.location" type="text" placeholder="城市/区域" required />
+            </label>
+            <label class="field">
+              <span>预算</span>
+              <input v-model.trim="draft.budget" type="text" placeholder="可选，例如：¥3000-5000" />
+            </label>
+            <label class="field">
+              <span>备注</span>
+              <textarea v-model.trim="draft.note" rows="3" placeholder="时间、人数、风格偏好等"></textarea>
+            </label>
+            <div class="form-actions">
+              <button type="button" class="btn ghost" @click="closePostForm">取消</button>
+              <button type="submit" class="btn primary">{{ isEditing ? '保存修改' : '发布到需求池' }}</button>
+            </div>
+          </form>
+        </div>
+      </div>
     </main>
   </div>
 </template>
@@ -96,9 +130,22 @@ export default {
       keyword: '',
       demands: [],
       loading: true,
+      showPostForm: false,
+      editingId: null,
+      draft: {
+        name: '',
+        phone: '',
+        service: '',
+        location: '',
+        budget: '',
+        note: '',
+      },
     };
   },
   computed: {
+    isEditing() {
+      return !!this.editingId;
+    },
     filteredDemands() {
       if (!this.keyword) return this.demands;
       const kw = this.keyword.trim();
@@ -124,7 +171,55 @@ export default {
       }, 260);
     },
     handlePostClick() {
-      this.$emit('post-demand');
+      this.resetDraft();
+      this.editingId = null;
+      this.showPostForm = true;
+    },
+    handleEdit(demand) {
+      this.draft = {
+        name: demand.name || '',
+        phone: demand.phone || '',
+        service: demand.service || '',
+        location: demand.location || '',
+        budget: demand.budget || '',
+        note: demand.note || '',
+      };
+      this.editingId = demand.id;
+      this.showPostForm = true;
+    },
+    closePostForm() {
+      this.showPostForm = false;
+    },
+    resetDraft() {
+      this.draft = {
+        name: '',
+        phone: '',
+        service: '',
+        location: '',
+        budget: '',
+        note: '',
+      };
+    },
+    submitDemand() {
+      const now = Date.now();
+      const newDemand = {
+        id: this.editingId || `draft-${now}`,
+        name: this.draft.name || '未命名客户',
+        phone: this.draft.phone || '',
+        service: this.draft.service || '',
+        location: this.draft.location || '',
+        budget: this.draft.budget || '',
+        note: this.draft.note || '',
+        status: this.editingId ? 'new' : 'new',
+        createdAt: now,
+      };
+      if (this.editingId) {
+        this.demands = this.demands.map((d) => (d.id === this.editingId ? { ...d, ...newDemand } : d));
+      } else {
+        this.demands = [newDemand, ...this.demands];
+      }
+      this.showPostForm = false;
+      this.editingId = null;
     },
     logAction(type, demand) {
       // 预留事件回调，当前只做占位
@@ -248,6 +343,108 @@ export default {
 .post-button .icon {
   font-size: 16px;
   line-height: 1;
+}
+
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.35);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 14px;
+  z-index: 2000;
+}
+
+.modal {
+  width: 100%;
+  max-width: 520px;
+  background: #ffffff;
+  border-radius: 14px;
+  padding: 14px 14px 16px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.16);
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.modal-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: #1f2937;
+}
+
+.close-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 10px;
+  border: 1px solid #e5e7eb;
+  background: #ffffff;
+  cursor: pointer;
+  font-size: 18px;
+  line-height: 1;
+  color: #4b5563;
+}
+
+.form {
+  display: grid;
+  gap: 10px;
+}
+
+.field {
+  display: grid;
+  gap: 6px;
+  font-size: 12.5px;
+  color: #374151;
+}
+
+.field input,
+.field textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid #e5e7eb;
+  background: #f9fafb;
+  font-size: 13px;
+  color: #111827;
+  outline: none;
+}
+
+.field textarea {
+  resize: vertical;
+}
+
+.form-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+  margin-top: 6px;
+}
+
+.btn {
+  min-width: 96px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.btn.ghost {
+  background: #f3f4f6;
+  border-color: #e5e7eb;
+  color: #374151;
+}
+
+.btn.primary {
+  background: var(--primary);
+  color: var(--primary-contrast);
+  border-color: var(--primary);
 }
 
 .empty-state {

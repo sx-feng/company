@@ -5,7 +5,8 @@
       v-bind="currentViewProps"
       @change-theme="handleThemeChange"
       @open-settings="handleOpenSettings"
-      @back="handleBackFromSettings"
+      @open-chat="handleOpenChat"
+      @back="handleBack"
     />
     <BottomNav
       v-if="showBottomNav"
@@ -22,15 +23,17 @@ import MakeupArtists from './views/MakeupArtists.vue';
 import MyPage from './views/MyPage.vue';
 import MessagePage from './views/MessagePage.vue';
 import SettingsPage from './views/SettingsPage.vue';
+import ChatPage from './views/ChatPage.vue';
 import BottomNav from './components/BottomNav.vue';
 
 export default {
   name: 'App',
-  components: { DemandPool, MakeupArtists, MyPage, MessagePage, SettingsPage, BottomNav },
+  components: { DemandPool, MakeupArtists, MyPage, MessagePage, SettingsPage, ChatPage, BottomNav },
   data() {
     return {
       activeNav: 'home',
       currentView: 'home',
+      chatSession: null,
       navItems: [
         { id: 'home', label: '需求池', icon: 'home' },
         { id: 'artists', label: '化妆师', icon: 'artists' },
@@ -49,6 +52,7 @@ export default {
       if (this.currentView === 'settings') return 'SettingsPage';
       if (this.currentView === 'artists') return 'MakeupArtists';
       if (this.currentView === 'message') return 'MessagePage';
+      if (this.currentView === 'chat') return 'ChatPage';
       if (this.currentView === 'profile') return 'MyPage';
       return 'DemandPool';
     },
@@ -65,6 +69,11 @@ export default {
           activeTheme: this.activeTheme,
         };
       }
+      if (this.currentView === 'chat') {
+        return {
+          chat: this.chatSession,
+        };
+      }
       return {};
     },
     showBottomNav() {
@@ -78,12 +87,24 @@ export default {
     handleNavChange(val) {
       this.activeNav = val;
       this.currentView = val;
+      if (val !== 'message') this.chatSession = null;
     },
     handleOpenSettings() {
       this.currentView = 'settings';
     },
-    handleBackFromSettings() {
-      this.currentView = 'profile';
+    handleBack() {
+      if (this.currentView === 'chat') {
+        this.currentView = 'message';
+        this.activeNav = 'message';
+        this.chatSession = null;
+      } else {
+        this.currentView = 'profile';
+      }
+    },
+    handleOpenChat(payload) {
+      this.chatSession = payload;
+      this.currentView = 'chat';
+      this.activeNav = 'message';
     },
     applyTheme(themeId) {
       const themeMap = {
